@@ -1,28 +1,56 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import Mat from './Mat';
 
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
-  }
+class App extends React.Component{
+    state = {
+        open:false,
+        hasNotifications: false,
+        notifications:[]
+    }
+    componentDidMount(){
+        window.StrataGame = {
+            notification: (message,medal) =>{
+                var notifications = [...this.state.notifications];
+                notifications.push({
+                    message,
+                    dateTime: new Date(),
+                    medal
+                });
+                this.setState({notifications});
+            },
+            hasNotifications: (b)=>{
+                this.setState({hasNotifications:b});
+            }
+        }
+    }
+    componentWillUnmount(){
+        window.Strata = null;
+    }
+    handleOpen = () =>{
+        this.setState({open:!this.state.open});
+    }
+    renderWindow = () =>{
+        if(this.state.open){
+            return(
+                <div>
+                    <div className="smat-app-mat-open">
+                        <Mat notifications={this.state.notifications}/>
+                    </div>
+                    <div className="smat-down-arrow"></div>
+                </div>
+            )
+        }
+    }
+    render(){
+        return(
+            <div>
+                <div className="smat-app-mat" style={{border:this.state.hasNotifications?"3px solid #04528A":null}} onClick={this.handleOpen}>
+                    <img src={"/stratalogobadge.png"} height="30" width="30"/>
+                </div>
+                {this.renderWindow()}
+            </div>
+        )
+    }
 }
 
 export default App;
